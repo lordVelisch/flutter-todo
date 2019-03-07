@@ -13,7 +13,6 @@ class TodoRoute extends StatefulWidget {
 class _TodoRouteState extends State<TodoRoute> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Container(
         padding: EdgeInsets.all(10),
         child: Column(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'todo_route.dart';
+import 'todo_edit_route.dart';
 
 void main() => runApp(MyApp());
 
@@ -41,10 +42,10 @@ class _MainRouteState extends State<MainRoute> {
     );
   }
 
-  Widget _buildTodo(BuildContext con, int index) {
+  Widget _buildTodo(int index) {
     return InkWell(
       splashColor: Colors.green,
-      onTap: () => _navigateToTodo(context, _todos[index]),
+      onTap: () => _navigateToTodo(_todos[index]),
       child: Card(
         child: ListTile(
           title: Text(_todos[index].title),
@@ -56,30 +57,54 @@ class _MainRouteState extends State<MainRoute> {
   Widget _buildTodoWidgets() {
     return ListView.builder(
       itemCount: _todos.length,
-      itemBuilder: (BuildContext con, int index) => _buildTodo(con, index),
+      itemBuilder: (BuildContext con, int index) => _buildTodo(index),
     );
   }
 
   void _add() {
     _todos.add(Todo(
-        title: "Added new todo",
-        description: "test3",
+      title: "Added new todo",
+      description: "test3",
     ));
     setState(() {});
   }
 
-  _navigateToTodo(BuildContext context, Todo todo) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) {
-          return Scaffold(
-            appBar: AppBar(
-              elevation: 1.0,
-              title: Text('Todo'),
-            ),
-            body: TodoRoute(myTodo: todo),
-          );
-        }
-    ));
+  _navigateToTodo(Todo todo) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          elevation: 1.0,
+          title: Text('Todo'),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _navigateToEditTodo(todo),
+          //onPressed: () {print("f");},
+          child: Icon(Icons.edit),
+        ),
+        body: TodoRoute(myTodo: todo),
+      );
+    }));
+  }
+
+  _navigateToEditTodo(Todo todo) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          elevation: 1.0,
+          title: Text(todo.title),
+        ),
+        /*floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            print("Hi");
+          },
+          child: Icon(Icons.ac_unit),
+        ),*/
+        body: Text("Fuck you"),
+        //body: TodoEditRoute(myTodo: todo),
+      );
+    }));
   }
 }
 
