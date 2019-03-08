@@ -63,54 +63,24 @@ class _MainRouteState extends State<MainRoute> {
 
   void _add() {
     _todos.add(Todo(
-      title: "Added new todo",
-      description: "test3",
+      title: "",
+      description: "",
     ));
-    setState(() {});
+   _navigateToEditTodo(this._todos[_todos.length - 1]);
   }
 
   _navigateToTodo(Todo todo) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          elevation: 1.0,
-          title: Text('Todo'),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _navigateToEditTodo(todo),
-          //onPressed: () {print("f");},
-          child: Icon(Icons.edit),
-        ),
-        body: TodoRoute(myTodo: todo),
-      );
-    }));
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => TodoRoute(myTodo: todo)));
   }
 
   _navigateToEditTodo(Todo todo) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          elevation: 1.0,
-          title: Text(todo.title),
-        ),
-        /*floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            print("Hi");
-          },
-          child: Icon(Icons.ac_unit),
-        ),*/
-        body: Text("Fuck you"),
-        //body: TodoEditRoute(myTodo: todo),
-      );
-    }));
+    Navigator.of(context).push(MaterialPageRoute( builder: (context) => TodoEditRoute(myTodo: todo)));
   }
 }
 
 class Todo {
-  const Todo({@required this.title, this.description}) : assert(title != null);
+  Todo({@required this.title, this.description}) : assert(title != null);
 
-  final String title;
-  final String description;
+  String title;
+  String description;
 }
