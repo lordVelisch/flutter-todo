@@ -14,20 +14,8 @@ class TodoRoute extends StatefulWidget {
 class _TodoRouteState extends State<TodoRoute> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 1.0,
-        title: Text("Todo"),
-      ),
-      body: _bodyContainer(),
-      floatingActionButton: FloatingActionButton(
-          onPressed: () => _navigateToEditRoute(widget.myTodo),
-          child: Icon(Icons.edit),
-        ),
-    );
+    return _bodyContainer();
   }
-  
-  
 
   Widget _bodyContainer() {
     return Container(
@@ -36,14 +24,9 @@ class _TodoRouteState extends State<TodoRoute> {
         children: <Widget>[
           Text(widget.myTodo.title),
           Text(widget.myTodo.description),
-         // FloatingActionButton(onPressed: _navigateToEditRoute(widget.myTodo))
         ],
       ),
     );
 }
-
-  _navigateToEditRoute(todo) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => TodoEditRoute(myTodo: todo)));
-  }
 
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'todo_route.dart';
 import 'todo_edit_route.dart';
@@ -11,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.blueGrey,
       ),
       home: MainRoute(),
     );
@@ -27,6 +29,8 @@ class _MainRouteState extends State<MainRoute> {
     Todo(title: 'Work on the todo app', description: 'test'),
     Todo(title: 'Show the difference', description: 'test2')
   ];
+
+  var _checkBoxValue = false;
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +50,32 @@ class _MainRouteState extends State<MainRoute> {
     return InkWell(
       splashColor: Colors.green,
       onTap: () => _navigateToTodo(_todos[index]),
+      borderRadius: BorderRadius.circular(20),
       child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: ListTile(
           title: Text(_todos[index].title),
+          trailing: Checkbox(
+              value: _todos[index].done,
+              onChanged: (value) {
+                setState(() {
+                  _todos[index].done = value;
+                  _onChecked(index);
+                });//_onChecked(index);
+                //_onChecked(index);
+              },
+            )
         ),
       ),
     );
+  }
+
+  void _onChecked(index) async {
+    sleep(const Duration(seconds: 2));
+   // setState(() {
+      _todos.removeAt(index);
+    //});
+    //Todo toast
   }
 
   Widget _buildTodoWidgets() {
@@ -66,15 +90,58 @@ class _MainRouteState extends State<MainRoute> {
       title: "",
       description: "",
     ));
-   _navigateToEditTodo(this._todos[_todos.length - 1]);
+    _navigateToEditTodo(this._todos[_todos.length - 1]);
   }
 
   _navigateToTodo(Todo todo) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => TodoRoute(myTodo: todo)));
+    Navigator.of(context)
+        .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("Todo"),
+          elevation: 1.0,
+        ),
+        floatingActionButton: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: FloatingActionButton(
+                heroTag: null,
+                onPressed: () => _onFinished(todo),
+                child: Icon(Icons.check),
+              ),
+            ),
+            FloatingActionButton(
+              heroTag: null,
+              onPressed: () => _navigateToEditRoute(todo),
+              child: Icon(Icons.edit),
+            ),
+          ],
+        ),
+        body: TodoRoute(
+          myTodo: todo,
+        ),
+      );
+    })); //  TodoRoute(myTodo: todo)));
   }
 
   _navigateToEditTodo(Todo todo) {
-    Navigator.of(context).push(MaterialPageRoute( builder: (context) => TodoEditRoute(myTodo: todo)));
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => TodoEditRoute(myTodo: todo)));
+  }
+
+  _navigateToEditRoute(todo) {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (BuildContext context) => TodoEditRoute(myTodo: todo)));
+  }
+
+  _onFinished(Todo todo) {
+    _todos.remove(todo);
+    Navigator.pop(context);
+
+    //Todo Toast
   }
 }
 
@@ -83,4 +150,5 @@ class Todo {
 
   String title;
   String description;
+  bool done = false;
 }
