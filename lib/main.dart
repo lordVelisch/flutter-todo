@@ -44,28 +44,34 @@ class _MainRouteState extends State<MainRoute> {
         onPressed: _add,
         child: Icon(Icons.add),
       ),
-      body: Column(children: <Widget>[
+      body: Stack(children: <Widget>[
         Container(padding: EdgeInsets.all(10), child: _buildTodoWidgets()),
-        Container(padding: EdgeInsets.all(10), child: _buildDoneWidgets())
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 100),
+          child: Align(
+            child: _buildDoneWidgets(),
+            alignment: FractionalOffset.bottomCenter,
+          ),
+        )
       ]),
     );
   }
 
-  Widget _buildTodo(int index) {
+  Widget _buildTodo(int index, List<Todo> list) {
     return InkWell(
       splashColor: Colors.green,
-      onTap: () => _navigateToTodo(_todos[index]),
+      onTap: () => _navigateToTodo(list[index]),
       borderRadius: BorderRadius.circular(20),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: ListTile(
-            title: Text(_todos[index].title),
+            title: list[index].done == true ? Text(list[index].title, style: TextStyle(decoration: TextDecoration.lineThrough),) : Text(list[index].title),
             trailing: Checkbox(
-              value: _todos[index].done,
+              value: list[index].done,
               onChanged: (value) {
                 setState(() {
-                  _todos[index].done = value;
-                  _onChecked(index);
+                  list[index].done = value;
+                  _onChecked(index, value);
                 }); //_onChecked(index);
                 //_onChecked(index);
               },
@@ -74,16 +80,33 @@ class _MainRouteState extends State<MainRoute> {
     );
   }
 
-  void _onChecked(index) async {
-
-    _todos.removeAt(index);
+  void _onChecked(index, value) async {
+    if (value == true) {
+      _done.add(_todos[index]);
+      _todos.removeAt(index);
+    } else {
+      _todos.add(_done[index]);
+      _done.removeAt(index);
+    }
     //Todo: toast
   }
 
   Widget _buildTodoWidgets() {
     return ListView.builder(
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
       itemCount: _todos.length,
-      itemBuilder: (BuildContext con, int index) => _buildTodo(index),
+      itemBuilder: (BuildContext con, int index) => _buildTodo(index, _todos),
+    );
+  }
+
+  Widget _buildDoneWidgets() {
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      itemCount: _done.length,
+      itemBuilder: (BuildContext build, int index) => _buildTodo(index, _done),
+      reverse: true,
     );
   }
 
@@ -109,11 +132,11 @@ class _MainRouteState extends State<MainRoute> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
-              child: FloatingActionButton(
+              child: todo.done == false ?FloatingActionButton(
                 heroTag: null,
                 onPressed: () => _onFinished(todo),
                 child: Icon(Icons.check),
-              ),
+              ) : SizedBox.shrink(),
             ),
             FloatingActionButton(
               heroTag: null,
@@ -140,14 +163,11 @@ class _MainRouteState extends State<MainRoute> {
   }
 
   _onFinished(Todo todo) {
+    _done.add(todo);
     _todos.remove(todo);
     Navigator.pop(context);
 
     //Todo Toast
-  }
-
-  _buildDoneWidgets() {
-
   }
 }
 
