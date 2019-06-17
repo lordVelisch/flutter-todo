@@ -30,6 +30,8 @@ class _MainRouteState extends State<MainRoute> {
     Todo(title: 'Show the difference', description: 'test2')
   ];
 
+  var _done = <Todo>[];
+
   var _checkBoxValue = false;
 
   @override
@@ -42,7 +44,10 @@ class _MainRouteState extends State<MainRoute> {
         onPressed: _add,
         child: Icon(Icons.add),
       ),
-      body: Container(padding: EdgeInsets.all(10), child: _buildTodoWidgets()),
+      body: Column(children: <Widget>[
+        Container(padding: EdgeInsets.all(10), child: _buildTodoWidgets()),
+        Container(padding: EdgeInsets.all(10), child: _buildDoneWidgets())
+      ]),
     );
   }
 
@@ -54,28 +59,25 @@ class _MainRouteState extends State<MainRoute> {
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: ListTile(
-          title: Text(_todos[index].title),
-          trailing: Checkbox(
+            title: Text(_todos[index].title),
+            trailing: Checkbox(
               value: _todos[index].done,
               onChanged: (value) {
                 setState(() {
                   _todos[index].done = value;
                   _onChecked(index);
-                });//_onChecked(index);
+                }); //_onChecked(index);
                 //_onChecked(index);
               },
-            )
-        ),
+            )),
       ),
     );
   }
 
   void _onChecked(index) async {
-    sleep(const Duration(seconds: 2));
-   // setState(() {
-      _todos.removeAt(index);
-    //});
-    //Todo toast
+
+    _todos.removeAt(index);
+    //Todo: toast
   }
 
   Widget _buildTodoWidgets() {
@@ -142,6 +144,10 @@ class _MainRouteState extends State<MainRoute> {
     Navigator.pop(context);
 
     //Todo Toast
+  }
+
+  _buildDoneWidgets() {
+
   }
 }
 
