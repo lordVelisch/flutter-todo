@@ -1,8 +1,10 @@
-import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'todo_route.dart';
 import 'todo_edit_route.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/status.dart' as status;
 
 void main() => runApp(MyApp());
 
@@ -32,7 +34,19 @@ class _MainRouteState extends State<MainRoute> {
 
   var _done = <Todo>[];
 
-  var _checkBoxValue = false;
+  final channel = IOWebSocketChannel.connect('ws://10.0.2.2:3000');
+  
+  @override
+  void initState() {
+    channel.stream.listen((message) {
+      channel.sink.add("received");
+      channel.sink.close(status.goingAway);
+      if (message != null) {
+        print(message);
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +79,12 @@ class _MainRouteState extends State<MainRoute> {
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: ListTile(
-            title: list[index].done == true ? Text(list[index].title, style: TextStyle(decoration: TextDecoration.lineThrough),) : Text(list[index].title),
+            title: list[index].done == true
+                ? Text(
+                    list[index].title,
+                    style: TextStyle(decoration: TextDecoration.lineThrough),
+                  )
+                : Text(list[index].title),
             trailing: Checkbox(
               value: list[index].done,
               onChanged: (value) {
@@ -132,11 +151,13 @@ class _MainRouteState extends State<MainRoute> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
-              child: todo.done == false ?FloatingActionButton(
-                heroTag: null,
-                onPressed: () => _onFinished(todo),
-                child: Icon(Icons.check),
-              ) : SizedBox.shrink(),
+              child: todo.done == false
+                  ? FloatingActionButton(
+                      heroTag: null,
+                      onPressed: () => _onFinished(todo),
+                      child: Icon(Icons.check),
+                    )
+                  : SizedBox.shrink(),
             ),
             FloatingActionButton(
               heroTag: null,
@@ -168,6 +189,12 @@ class _MainRouteState extends State<MainRoute> {
     Navigator.pop(context);
 
     //Todo Toast
+  }
+
+  @override
+  void dispose() {
+    channel.sink.close();
+    super.dispose();
   }
 }
 
